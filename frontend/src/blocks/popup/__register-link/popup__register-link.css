@@ -1,0 +1,9 @@
+.popup__register-link {
+    text-decoration: none;
+    margin-left: 7px;
+}
+
+.popup__register-link:hover {
+    opacity: 0.6;
+    transition: linear 0.4s;
+}

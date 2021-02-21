@@ -1,0 +1,38 @@
+@import url(./__form/popup__form.css);
+@import url(./__form/_confirm/popup__form_confirm.css);
+@import url(./__form/_update-avatar/popup__form_update-avatar.css);
+@import url(./__form/_login-register/popup__form_login-register.css);
+@import url(./__form/_success-error/popup__form_success-error.css);
+@import url(./__title/popup__title.css);
+@import url(./__title/_login-register/popup__title_login-register.css);
+@import url(./__title/_success-error/popup__title_success-error.css);
+@import url(./__subtitle/popup__subtitle.css);
+@import url(./__input/popup__input.css);
+@import url(./__input/_type_error/popup__input_type_error.css);
+@import url(./__input/_login-register/popup__input_login-register.css);
+@import url(./__button/popup__button.css);
+@import url(./__button/_disabled/popup__button_disabled.css);
+@import url(./__button/_login-register/popup__button_login-register.css);
+@import url(./__close/popup__close.css);
+@import url(./__image/popup__image.css);
+@import url(./__zoom-container/popup__zoom-container.css);
+@import url(./__error/popup__error.css);
+@import url(./__register/popup__register.css);
+@import url(./__register-text/popup__register-text.css);
+@import url(./__register-link/popup__register-link.css);
+
+
+.popup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.5s linear;
+}

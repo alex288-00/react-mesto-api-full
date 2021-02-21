@@ -1,0 +1,13 @@
+.profile__update-btn {
+    width: 26px;
+    height: 26px;
+    display: flex; 
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: border-box;
+    background-image: url(../../../images/pen_ava.svg);
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
