@@ -13,6 +13,12 @@ const urlencodedParser = bodyParser.urlencoded({ extended: true });
 const { PORT = 3000 } = process.env;
 const app = express();
 
+const whiteList = [
+  'localhost:3000',
+  'http://mesto.alex.students.nomoreparties.space',
+  'https://mesto.alex.students.nomoreparties.space',
+];
+
 // Подключаемся к Mongo
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -24,6 +30,16 @@ app.use(bodyParser.json());
 app.use(urlencodedParser);
 
 app.use(requestLogger);
+
+app.use((req, res, next) => {
+  const { origin } = req.headers; // Записываем в переменную origin соответствующий заголовок
+
+  if (whiteList.includes(origin)) { // Проверяем, что значение origin есть среди разрешённых доменов
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
+  next();
+});
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
