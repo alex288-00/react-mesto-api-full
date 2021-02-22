@@ -98,7 +98,7 @@ export class Api {
 
 const api = new Api({
   baseUrl: "http://api.mesto.alex.students.nomoreparties.space",
-  headers: "Bearer",
+  headers: "Bearer " + localStorage.getItem('jwt')
 });
 
 export default api;
