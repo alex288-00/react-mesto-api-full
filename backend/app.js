@@ -40,10 +40,10 @@ const corsOptionsDelegate = (req, callback) => {
   callback(null, corsOptions); // callback expects two parameters: error and options
 };
 
-app.use(cors(corsOptionsDelegate));
-
 app.use(bodyParser.json());
 app.use(urlencodedParser);
+
+app.use(cors(corsOptionsDelegate));
 
 app.use(requestLogger);
 
