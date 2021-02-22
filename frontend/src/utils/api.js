@@ -1,3 +1,4 @@
+
 export class Api {
   constructor({ baseUrl, headers }) {
     this._baseUrl = baseUrl;
@@ -97,7 +98,7 @@ export class Api {
 
 const api = new Api({
   baseUrl: "http://api.mesto.alex.students.nomoreparties.space",
-  headers: "206505f6-db9d-4d3e-9753-f9e84f791b0d",
+  headers: "Bearer",
 });
 
 export default api;

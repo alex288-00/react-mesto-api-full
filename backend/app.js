@@ -15,7 +15,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 const whiteList = [
-  'localhost:3000',
+  'http://localhost:3000',
   'http://mesto.alex.students.nomoreparties.space',
   'https://mesto.alex.students.nomoreparties.space',
 ];
