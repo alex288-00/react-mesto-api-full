@@ -52,8 +52,7 @@ module.exports.deleteCard = (req, res, next) => {
 
 // Ставим лайк карточке
 module.exports.likeCard = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId, req.user._id, { $addToSet: { likes: req.user } },
-    { new: true })
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: res.user } }, { new: true })
     .orFail(() => {
       throw new Error('404');
     })
