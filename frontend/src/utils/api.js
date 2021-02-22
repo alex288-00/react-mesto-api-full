@@ -63,7 +63,7 @@ export class Api {
 
   //Добавляем или удаляем лайк
   changeLikeCardStatus(cardId, isLiked) {
-    return fetch(this._baseUrl + "/cards/likes/" + cardId, {
+    return fetch(this._baseUrl + "/cards/" + cardId + "/likes/", {
       method: isLiked ? "PUT" : "DELETE",
       headers: {
         authorization: this._headers,

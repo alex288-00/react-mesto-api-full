@@ -36,7 +36,7 @@ module.exports.getUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
       }
-      res.send({ data: user });
+      res.send(user);
     })
     .catch((err) => {
       next(err);
@@ -50,7 +50,7 @@ module.exports.getUsers = (req, res, next) => {
       if (!users) {
         throw new NotFoundError('Пользователи не найдены');
       }
-      res.send({ data: users });
+      res.send(users);
     })
     .catch((err) => {
       next(err);
@@ -64,7 +64,7 @@ module.exports.getUsersId = (req, res, next) => {
       if (!users) {
         throw new NotFoundError('Нет пользователя с таким id');
       }
-      res.send({ data: users });
+      res.send(users);
     })
 
     .catch((err) => {
@@ -85,7 +85,7 @@ module.exports.createUser = (req, res, next) => {
       if (!user) {
         throw new BadRequestError('Запрос неправильно сформирован');
       }
-      res.send({ data: user });
+      res.send(user);
     })
     .catch((err) => {
       next(err);
@@ -103,7 +103,7 @@ module.exports.updateProfile = (req, res, next) => {
       if (!user) {
         throw new BadRequestError('Запрос неправильно сформирован');
       }
-      res.send({ data: user });
+      res.send(user);
     })
     .catch((err) => {
       next(err);
@@ -121,7 +121,7 @@ module.exports.updateAvatar = (req, res, next) => {
       if (!ava) {
         throw new BadRequestError('Запрос неправильно сформирован');
       }
-      res.send({ data: ava });
+      res.send(ava);
     })
     .catch((err) => {
       next(err);

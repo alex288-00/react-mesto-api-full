@@ -26,7 +26,7 @@ module.exports.createCard = (req, res, next) => {
       if (!card) {
         throw new BadRequestError('Запрос неправильно сформирован');
       }
-      res.send({ data: card });
+      res.send(card);
     })
     .catch((err) => {
       next(err);
@@ -56,7 +56,7 @@ module.exports.likeCard = (req, res) => {
     .orFail(() => {
       throw new Error('404');
     })
-    .then((like) => res.send({ data: like }))
+    .then((like) => res.send(like))
     .catch((err) => {
       if (err.message === '404') {
         return res.status(404).send({ message: 'Карточка не найдена' });
@@ -74,7 +74,7 @@ module.exports.dislikeCard = (req, res) => {
     .orFail(() => {
       throw new Error('404');
     })
-    .then((dislike) => res.send({ data: dislike }))
+    .then((dislike) => res.send(dislike))
     .catch((err) => {
       if (err.message === '404') {
         return res.status(404).send({ message: 'Карточка не найдена' });
