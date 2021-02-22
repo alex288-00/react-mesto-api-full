@@ -56,7 +56,7 @@ module.exports.likeCard = (req, res) => {
     .orFail(() => {
       throw new Error('404');
     })
-    .then((like) => res.send(like))
+    .then((like) => res.send(like + req.user))
     .catch((err) => {
       if (err.message === '404') {
         return res.status(404).send({ message: 'Карточка не найдена' });
