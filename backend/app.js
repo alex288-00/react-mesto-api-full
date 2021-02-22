@@ -27,17 +27,20 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-const corsOptions = {
-  origin(origin, callback) {
-    if (whiteList.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+const corsOptionsDelegate = (req, callback) => {
+  let corsOptions;
+  if (whiteList.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = {
+      credentials: true, // This is important.
+      origin: true,
+    }; // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false }; // disable CORS for this request
+  }
+  callback(null, corsOptions); // callback expects two parameters: error and options
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptionsDelegate));
 
 app.use(bodyParser.json());
 app.use(urlencodedParser);
