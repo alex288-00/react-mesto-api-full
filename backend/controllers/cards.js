@@ -40,10 +40,10 @@ module.exports.deleteCard = (req, res, next) => {
       if (String(card.owner) !== String(req.user._id)) {
         throw new BadRequestError('Карточка не удалена');
       }
-      Card.findByIdAndRemove(card._id)
-        .then(() => {
-          res.send({ message: 'delete' });
-        });
+      Card.findByIdAndRemove(card._id);
+    })
+    .then(() => {
+      res.send({ message: 'delete' });
     })
     .catch((err) => {
       next(err);
