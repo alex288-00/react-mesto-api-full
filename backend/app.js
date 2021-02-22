@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const { celebrate, Joi, errors } = require('celebrate');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
@@ -13,11 +14,11 @@ const urlencodedParser = bodyParser.urlencoded({ extended: true });
 const { PORT = 3000 } = process.env;
 const app = express();
 
-const whiteList = [
-  'localhost:3000',
-  'http://mesto.alex.students.nomoreparties.space',
-  'https://mesto.alex.students.nomoreparties.space',
-];
+// const whiteList = [
+//   'localhost:3000',
+//   'http://mesto.alex.students.nomoreparties.space',
+//   'https://mesto.alex.students.nomoreparties.space',
+// ];
 
 // Подключаемся к Mongo
 mongoose.connect('mongodb://localhost:27017/mestodb', {
@@ -31,15 +32,18 @@ app.use(urlencodedParser);
 
 app.use(requestLogger);
 
-app.use((req, res, next) => {
-  const { origin } = req.headers; // Записываем в переменную origin соответствующий заголовок
+app.use(cors());
 
-  if (whiteList.includes(origin)) { // Проверяем, что значение origin есть среди разрешённых доменов
-    res.header('Access-Control-Allow-Origin', origin);
-  }
+// app.use((req, res, next) => {
+//   const { origin } = req.headers; // Записываем в переменную origin соответствующий заголовок
 
-  next();
-});
+//   if (whiteList.includes(origin)) {
+// Проверяем, что значение origin есть среди разрешённых доменов
+//     res.header('Access-Control-Allow-Origin', origin);
+//   }
+
+//   next();
+// });
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
