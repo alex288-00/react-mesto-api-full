@@ -55,9 +55,10 @@ module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user } }, { new: true })
     .orFail(() => {
       throw new Error('404');
-    });
+    })
+    .then((like) => res.send(like));
   Card.findById(req.params.cardId)
-    .then((card) => res.send(card))
+    .catch((card) => res.send(card))
     .catch((err) => {
       if (err.message === '404') {
         return res.status(404).send({ message: 'Карточка не найдена' });
