@@ -14,11 +14,11 @@ const urlencodedParser = bodyParser.urlencoded({ extended: true });
 const { PORT = 3000 } = process.env;
 const app = express();
 
-// const whiteList = [
-//   'localhost:3000',
-//   'http://mesto.alex.students.nomoreparties.space',
-//   'https://mesto.alex.students.nomoreparties.space',
-// ];
+const whiteList = [
+  'localhost:3000',
+  'http://mesto.alex.students.nomoreparties.space',
+  'https://mesto.alex.students.nomoreparties.space',
+];
 
 // Подключаемся к Mongo
 mongoose.connect('mongodb://localhost:27017/mestodb', {
@@ -27,7 +27,17 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-app.use(cors());
+const corsOptions = {
+  origin(origin, callback) {
+    if (whiteList.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
+
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(urlencodedParser);
