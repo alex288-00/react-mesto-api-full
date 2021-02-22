@@ -52,11 +52,11 @@ module.exports.deleteCard = (req, res, next) => {
 
 // Ставим лайк карточке
 module.exports.likeCard = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user } }, { new: true })
     .orFail(() => {
       throw new Error('404');
     })
-    .then((like) => res.send({ data: like }))
+    .then((like) => res.send(like))
     .catch((err) => {
       if (err.message === '404') {
         return res.status(404).send({ message: 'Карточка не найдена' });
@@ -74,7 +74,7 @@ module.exports.dislikeCard = (req, res) => {
     .orFail(() => {
       throw new Error('404');
     })
-    .then((dislike) => res.send({ data: dislike }))
+    .then((dislike) => res.send(dislike))
     .catch((err) => {
       if (err.message === '404') {
         return res.status(404).send({ message: 'Карточка не найдена' });
