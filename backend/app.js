@@ -27,12 +27,12 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+app.use(cors());
+
 app.use(bodyParser.json());
 app.use(urlencodedParser);
 
 app.use(requestLogger);
-
-app.use(cors());
 
 // app.use((req, res, next) => {
 //   const { origin } = req.headers; // Записываем в переменную origin соответствующий заголовок
