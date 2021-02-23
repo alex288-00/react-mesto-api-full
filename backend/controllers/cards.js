@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const Card = require('../models/card');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
@@ -38,11 +38,11 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (String(card.owner) !== String(req.user._id)) {
-        throw new BadRequestError('Карточка не удалена');
+        throw new BadRequestError('Можно удалить только свой пост');
       }
       Card.findByIdAndRemove(card._id)
         .then(() => {
-          res.send({ message: 'delete' });
+          res.send({ message: 'Пост удален' });
         });
     })
     .catch((err) => {
@@ -51,39 +51,29 @@ module.exports.deleteCard = (req, res, next) => {
 };
 
 // Ставим лайк карточке
-module.exports.likeCard = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user } }, { new: true })
-    .orFail(() => {
-      throw new Error('404');
+module.exports.likeCard = (req, res, next) => {
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+    .then((like) => {
+      if (!like) {
+        throw new BadRequestError('Запрос неправильно сформирован');
+      }
+      res.send(like);
     })
-    .then((like) => res.send(like));
-  Card.findById(req.params.cardId)
-    .catch((card) => res.send(card))
     .catch((err) => {
-      if (err.message === '404') {
-        return res.status(404).send({ message: 'Карточка не найдена' });
-      }
-      if (err instanceof mongoose.CastError) {
-        return res.status(400).send({ message: 'Запрос неправильно сформирован' });
-      }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      next(err);
     });
 };
 
 // Удаляем лайк
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .orFail(() => {
-      throw new Error('404');
+    .then((dislike) => {
+      if (!dislike) {
+        throw new BadRequestError('Запрос неправильно сформирован');
+      }
+      res.send(dislike);
     })
-    .then((dislike) => res.send(dislike))
     .catch((err) => {
-      if (err.message === '404') {
-        return res.status(404).send({ message: 'Карточка не найдена' });
-      }
-      if (err instanceof mongoose.CastError) {
-        return res.status(400).send({ message: 'Запрос неправильно сформирован' });
-      }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      next(err);
     });
 };

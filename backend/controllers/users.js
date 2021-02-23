@@ -77,15 +77,26 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  return bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
+  User.findOne({ email })
     .then((user) => {
-      if (!user) {
-        throw new BadRequestError('Запрос неправильно сформирован');
+      if (user) {
+        throw new UnauthorizedError('Пользователь с такие email уже зарегистрирован');
       }
-      res.send(user);
+      return bcrypt.hash(password, 10)
+        .then((hash) => User.create({
+          name, about, avatar, email, password: hash,
+        }));
+    })
+    .then((user) => {
+      res.send(
+        {
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          _id: user._id,
+          email: user.email,
+        },
+      );
     })
     .catch((err) => {
       next(err);
