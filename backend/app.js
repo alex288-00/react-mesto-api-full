@@ -1,15 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const validator = require('validator');
-const { celebrate, Joi, errors } = require('celebrate');
+const { CelebrateError } = require('celebrate');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const routerUsers = require('./routes/users');
-const routerCards = require('./routes/cards');
-const { login, createUser } = require('./controllers/users');
-const auth = require('./middlewares/auth');
+const router = require('./routes/index');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const NotFoundError = require('./errors/NotFoundError');
 
 const urlencodedParser = bodyParser.urlencoded({ extended: true });
 const { PORT = 3000 } = process.env;
@@ -27,6 +22,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
+  useUnifiedTopology: true,
 });
 
 const corsOptionsDelegate = (req, callback) => {
@@ -57,63 +53,17 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-// Авторизация
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email().custom((value, helper) => {
-      if (validator.isEmail(value)) {
-        return value;
-      }
-      return helper.message('Невалидный email');
-    })
-      .messages({
-        'any.required': 'Обязательное поле',
-      }),
-    password: Joi.string().required().min(3).messages({
-      'string.min': 'Минимум 3 символа',
-      'any.required': 'Обязательное поле',
-    }),
-  }),
-}), login);
-
-// Регистрация
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email().custom((value, helper) => {
-      if (validator.isEmail(value)) {
-        return value;
-      }
-      return helper.message('Невалидный email');
-    })
-      .messages({
-        'any.required': 'Обязательное поле',
-      }),
-    password: Joi.string().required().min(3).messages({
-      'string.min': 'Минимум 3 символа',
-      'any.required': 'Обязательное поле',
-    }),
-  }),
-}), createUser);
-
-// Роутер для пользователей
-app.use('/users', auth, routerUsers);
-
-// Роутер для карточек
-app.use('/cards', auth, routerCards);
-
-// Роутер для ненайденной на сервере страницы
-app.use('/*', () => {
-  throw new NotFoundError('Запрашиваемый ресурс не найден');
-});
+app.use('/', router);
 
 // Логи ошибок
 app.use(errorLogger);
 
-// Обработка ошибок Joi
-app.use(errors());
-
 // Централизованная обработка ошибок
+// eslint-disable-next-line consistent-return
 app.use((err, req, res, next) => {
+  if (err instanceof CelebrateError) {
+    return res.status(400).send({ message: err.details.get('body').details[0].message });
+  }
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({
     message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
@@ -121,7 +71,7 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// Порт для нашего приложения
+// Порт для нашего приложенияxxz
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);

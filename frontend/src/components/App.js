@@ -147,7 +147,6 @@ function App() {
       .then((res) => {
         if (res.token) {
           SetToken(res.token);
-          // api.tokenCheck(res.token)
           setLoggedIn(true);
           setUserData({
             email: email,

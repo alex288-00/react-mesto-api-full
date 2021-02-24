@@ -22,12 +22,12 @@ routerUsers.get('/:userId', getUsersId);
 routerUsers.patch('/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).messages({
-      'string.min': 'Минимум 2 символа',
-      'string.max': 'Максимум 30 символов',
+      'string.min': 'Имя должно содержать не меньше 2 символов',
+      'string.max': 'Имя не может быть больше 30 символов',
     }),
     about: Joi.string().min(2).max(30).messages({
-      'string.min': 'Минимум 2 символа',
-      'string.max': 'Максимум 30 символов',
+      'string.min': 'Информация о себе должна содержать не меньше 2 символов',
+      'string.max': 'Информация о себе должна быть больше 30 символов',
     }),
   }),
 }), updateProfile);

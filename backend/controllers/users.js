@@ -4,6 +4,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const BadRequestError = require('../errors/BadRequestError');
+const ConflictError = require('../errors/ConflictError');
 
 // Авторизация пользователя, проверяем почту и пароль и возвращаем токен
 module.exports.login = (req, res, next) => {
@@ -40,7 +41,11 @@ module.exports.getUser = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      next(err);
+      if (err.name === 'CastError') {
+        const er = new BadRequestError('Запрос неправильно сформирован');
+        return next(er);
+      }
+      return next(err);
     });
 };
 
@@ -69,7 +74,11 @@ module.exports.getUsersId = (req, res, next) => {
     })
 
     .catch((err) => {
-      next(err);
+      if (err.name === 'CastError') {
+        const er = new BadRequestError('Запрос неправильно сформирован');
+        return next(er);
+      }
+      return next(err);
     });
 };
 
@@ -81,7 +90,7 @@ module.exports.createUser = (req, res, next) => {
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        throw new UnauthorizedError('Пользователь с такие email уже зарегистрирован');
+        throw new ConflictError('Пользователь с такие email уже зарегистрирован');
       }
       return bcrypt.hash(password, 10)
         .then((hash) => User.create({
@@ -118,7 +127,11 @@ module.exports.updateProfile = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      next(err);
+      if (err.name === 'CastError') {
+        const er = new BadRequestError('Запрос неправильно сформирован');
+        return next(er);
+      }
+      return next(err);
     });
 };
 
@@ -136,6 +149,10 @@ module.exports.updateAvatar = (req, res, next) => {
       res.send(ava);
     })
     .catch((err) => {
-      next(err);
+      if (err.name === 'CastError') {
+        const er = new BadRequestError('Запрос неправильно сформирован');
+        return next(er);
+      }
+      return next(err);
     });
 };

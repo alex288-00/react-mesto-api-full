@@ -17,8 +17,8 @@ routerCards.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required()
       .messages({
-        'string.min': 'Минимум 2 символа',
-        'string.max': 'Максимум 30 символов',
+        'string.min': 'Название карточки должно содержать не меньше 2 символов',
+        'string.max': 'Название карточки не может быть больше 30 символов',
         'any.required': 'Обязательное поле',
       }),
     link: Joi.string().required().custom((value, helper) => {
