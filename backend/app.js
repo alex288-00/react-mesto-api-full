@@ -9,11 +9,13 @@ const routerCards = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const NotFoundError = require('./errors/NotFoundError');
 
 const urlencodedParser = bodyParser.urlencoded({ extended: true });
 const { PORT = 3000 } = process.env;
 const app = express();
 
+// Адреса для CORS
 const whiteList = [
   'http://localhost:3000',
   'http://mesto.alex.students.nomoreparties.space',
@@ -45,25 +47,17 @@ app.use(urlencodedParser);
 
 app.use(cors(corsOptionsDelegate));
 
+// Логи запросов
 app.use(requestLogger);
 
-// app.use((req, res, next) => {
-//   const { origin } = req.headers; // Записываем в переменную origin соответствующий заголовок
-
-//   if (whiteList.includes(origin)) {
-// Проверяем, что значение origin есть среди разрешённых доменов
-//     res.header('Access-Control-Allow-Origin', origin);
-//   }
-
-//   next();
-// });
-
+// Crash Test
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
 
+// Авторизация
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email().custom((value, helper) => {
@@ -75,12 +69,14 @@ app.post('/signin', celebrate({
       .messages({
         'any.required': 'Обязательное поле',
       }),
-    password: Joi.string().required().min(8).messages({
-      'string.min': 'Минимум 8 символов',
+    password: Joi.string().required().min(3).messages({
+      'string.min': 'Минимум 3 символа',
       'any.required': 'Обязательное поле',
     }),
   }),
 }), login);
+
+// Регистрация
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email().custom((value, helper) => {
@@ -92,34 +88,28 @@ app.post('/signup', celebrate({
       .messages({
         'any.required': 'Обязательное поле',
       }),
-    password: Joi.string().required().min(8).messages({
-      'string.min': 'Минимум 8 символов',
+    password: Joi.string().required().min(3).messages({
+      'string.min': 'Минимум 3 символа',
       'any.required': 'Обязательное поле',
     }),
   }),
 }), createUser);
 
-app.use(auth);
-// Временное решение авторизации, захардкодили id
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '6002fe1edd9edd2ecc23bafb',
-//   };
-//   next();
-// });
 // Роутер для пользователей
-app.use('/users', routerUsers);
+app.use('/users', auth, routerUsers);
 
 // Роутер для карточек
-app.use('/cards', routerCards);
+app.use('/cards', auth, routerCards);
 
 // Роутер для ненайденной на сервере страницы
-app.use('/*', (req, res) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+app.use('/*', () => {
+  throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
 
+// Логи ошибок
 app.use(errorLogger);
 
+// Обработка ошибок Joi
 app.use(errors());
 
 // Централизованная обработка ошибок

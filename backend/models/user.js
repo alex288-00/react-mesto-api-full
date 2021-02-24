@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
-    minlength: 8,
+    minlength: 3,
   },
 });
 module.exports = mongoose.model('user', userSchema);

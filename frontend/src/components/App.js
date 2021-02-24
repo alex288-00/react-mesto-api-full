@@ -20,6 +20,9 @@ import InfoTooltip from "./InfoTooltip.js";
 function App() {
   const history = useHistory();
 
+  //Переменная состояния для токена
+  const [token, SetToken] = useState("");
+
   //Переменная состояния попапа ошибки/успешной регистрации
   const [infoModal, setInfoModal] = useState({
     message: "",
@@ -83,91 +86,13 @@ function App() {
     setInfoModalOpen(false);
   }
 
-  //Обработчик изменения данных пользователя
-  function handleUpdateUser(userData) {
-    setLoader("Сохранение..");
-    api
-      .patchUserData(userData)
-      .then((userInfo) => {
-        setCurrentUser(userInfo);
-      })
-      .catch((err) => {
-        console.log("Произошла ошибка:", err);
-      })
-      .finally(() => {
-        setLoader("Сохранить");
-        closeAllPopups();
-      });
-  }
-
-  //Обработчик аватара пользователя
-  function handleUpdateAvatar(userData) {
-    setLoader("Сохранение..");
-    api
-      .patchUserAvatar(userData)
-      .then((userAva) => {
-        setCurrentUser(userAva);
-      })
-      .catch((err) => {
-        console.log("Произошла ошибка:", err);
-      })
-
-      .finally(() => {
-        setLoader("Сохранить");
-        closeAllPopups();
-      });
-  }
-
-  //Обработчик создания новой карточки
-  function handleAddPlaceSubmit(cardData) {
-    setPlaceLoader("Создание..");
-    api
-      .postAddCard(cardData)
-      .then((newCard) => {
-        setCards([newCard, ...cards]);
-      })
-      .catch((err) => {
-        console.log("Произошла ошибка:", err);
-      })
-      .finally(() => {
-        setPlaceLoader("Создать");
-        closeAllPopups();
-      });
-  }
-
-  //Обработчик лайка карточки
-  function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i === currentUser._id);
-    api
-      .changeLikeCardStatus(card._id, !isLiked)
-      .then((newCard) => {
-        const newCards = cards.map((c) => (c._id === card._id ? newCard : c));
-        setCards(newCards);
-      })
-      .catch((err) => {
-        console.log("Произошла ошибка:", err);
-      });
-  }
-
-  //Обработчик удаления карточек
-  function handleCardDelete(card) {
-    api
-      .deleteCard(card._id)
-      .then(() => {
-        const newCardData = cards.filter((c) => c._id !== card._id);
-        setCards(newCardData);
-      })
-      .catch((err) => {
-        console.log("Произошла ошибка:", err);
-      });
-  }
-
   //Эффект совершает запрос для проверки валидности токена и получения емайл для вставки в шапку сайта
   useEffect(() => {
     function tokenCheck() {
       if (localStorage.getItem("jwt")) {
         const jwt = localStorage.getItem("jwt");
         if (jwt) {
+          SetToken(jwt);
           return mestoAuth
             .getContent(jwt)
             .then((res) => {
@@ -221,6 +146,8 @@ function App() {
       .autorize(email, password)
       .then((res) => {
         if (res.token) {
+          SetToken(res.token);
+          // api.tokenCheck(res.token)
           setLoggedIn(true);
           setUserData({
             email: email,
@@ -229,7 +156,9 @@ function App() {
           return res;
         }
       })
-      .then(() => history.push("/"))
+      .then(() => {
+        history.push("/");
+      })
       .catch((err) => {
         setInfoModalOpen(true);
         setInfoModal({
@@ -250,31 +179,110 @@ function App() {
   //Эффект совершает запрос в API за карточками
   useEffect(() => {
     if (loggedIn) {
-      setLoggedIn(true)
       api
-      .getInitialCards()
-      .then((card) => {
-        setCards(card);
-      })
+        .getInitialCards(token)
+        .then((card) => {
+          setCards(card);
+        })
 
-      .catch((err) => {
-        console.log("Произошла ошибка:", err);
-      });
+        .catch((err) => {
+          console.log("Произошла ошибка:", err);
+        });
     }
-    
-  }, [loggedIn]);
+  }, [loggedIn, token]);
 
   //Эффект совершает запрос в API за данными пользователя
   useEffect(() => {
+    if (loggedIn) {
+      api
+        .getUserData(token)
+        .then((userData) => {
+          setCurrentUser(userData);
+        })
+        .catch((err) => {
+          console.log("Произошла ошибка:", err);
+        });
+    }
+  }, [loggedIn, token]);
+
+  //Обработчик изменения данных пользователя
+  function handleUpdateUser(userData) {
+    setLoader("Сохранение..");
     api
-      .getUserData()
-      .then((userData) => {
-        setCurrentUser(userData);
+      .patchUserData(userData, token)
+      .then((userInfo) => {
+        setCurrentUser(userInfo);
+      })
+      .catch((err) => {
+        console.log("Произошла ошибка:", err);
+      })
+      .finally(() => {
+        setLoader("Сохранить");
+        closeAllPopups();
+      });
+  }
+
+  //Обработчик аватара пользователя
+  function handleUpdateAvatar(userData) {
+    setLoader("Сохранение..");
+    api
+      .patchUserAvatar(userData, token)
+      .then((userAva) => {
+        setCurrentUser(userAva);
+      })
+      .catch((err) => {
+        console.log("Произошла ошибка:", err);
+      })
+
+      .finally(() => {
+        setLoader("Сохранить");
+        closeAllPopups();
+      });
+  }
+
+  //Обработчик создания новой карточки
+  function handleAddPlaceSubmit(cardData) {
+    setPlaceLoader("Создание..");
+    api
+      .postAddCard(cardData, token)
+      .then((newCard) => {
+        setCards([newCard, ...cards]);
+      })
+      .catch((err) => {
+        console.log("Произошла ошибка:", err);
+      })
+      .finally(() => {
+        setPlaceLoader("Создать");
+        closeAllPopups();
+      });
+  }
+
+  //Обработчик лайка карточки
+  function handleCardLike(card) {
+    const isLiked = card.likes.some((i) => i === currentUser._id);
+    api
+      .changeLikeCardStatus(card._id, !isLiked, token)
+      .then((newCard) => {
+        const newCards = cards.map((c) => (c._id === card._id ? newCard : c));
+        setCards(newCards);
       })
       .catch((err) => {
         console.log("Произошла ошибка:", err);
       });
-  }, []);
+  }
+
+  //Обработчик удаления карточек
+  function handleCardDelete(card) {
+    api
+      .deleteCard(card._id, token)
+      .then(() => {
+        const newCardData = cards.filter((c) => c._id !== card._id);
+        setCards(newCardData);
+      })
+      .catch((err) => {
+        console.log("Произошла ошибка:", err);
+      });
+  }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>

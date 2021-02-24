@@ -12,13 +12,11 @@ const {
 // GET-запрос отображает всех пользователей
 routerUsers.get('/', getUsers);
 
+// GET-запрос данных пользователя
 routerUsers.get('/me', getUser);
 
 // GET-запрос отображает конкретного пользователя по id
 routerUsers.get('/:userId', getUsersId);
-
-// POST-запрос на создание нового пользователя
-// routerUsers.post('/', createUser);
 
 // PATCH-запрос на обновление данных пользователя
 routerUsers.patch('/me', celebrate({

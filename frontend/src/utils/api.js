@@ -1,4 +1,3 @@
-
 export class Api {
   constructor({ baseUrl, headers }) {
     this._baseUrl = baseUrl;
@@ -14,29 +13,29 @@ export class Api {
   }
 
   //Запрашиваем информацию о пользователе
-  getUserData() {
+  getUserData(token) {
     return fetch(this._baseUrl + "/users/me", {
       headers: {
-        authorization: this._headers,
+        authorization: "Bearer " + token,
       },
     }).then(this._statusJson);
   }
 
   //Запрашиваем карточки
-  getInitialCards() {
+  getInitialCards(token) {
     return fetch(this._baseUrl + "/cards", {
       headers: {
-        authorization: this._headers,
+        authorization: "Bearer " + token,
       },
     }).then(this._statusJson);
   }
 
   //Обновляем информацию о пользователе
-  patchUserData(userData) {
+  patchUserData(userData, token) {
     return fetch(this._baseUrl + "/users/me", {
       method: "PATCH",
       headers: {
-        authorization: this._headers,
+        authorization: "Bearer " + token,
         "Content-type": "application/json",
       },
       body: JSON.stringify({
@@ -47,11 +46,11 @@ export class Api {
   }
 
   //Отправляем новую карточку на сервер
-  postAddCard(cardData) {
+  postAddCard(cardData, token) {
     return fetch(this._baseUrl + "/cards", {
       method: "POST",
       headers: {
-        authorization: this._headers,
+        authorization: "Bearer " + token,
         "Content-type": "application/json",
       },
       body: JSON.stringify({
@@ -62,31 +61,31 @@ export class Api {
   }
 
   //Добавляем или удаляем лайк
-  changeLikeCardStatus(cardId, isLiked) {
+  changeLikeCardStatus(cardId, isLiked, token) {
     return fetch(this._baseUrl + "/cards/" + cardId + "/likes/", {
       method: isLiked ? "PUT" : "DELETE",
       headers: {
-        authorization: this._headers,
+        authorization: "Bearer " + token,
       },
     }).then(this._statusJson);
   }
 
   //Удаляем карточку
-  deleteCard(cardId) {
+  deleteCard(cardId, token) {
     return fetch(this._baseUrl + "/cards/" + cardId, {
       method: "DELETE",
       headers: {
-        authorization: this._headers,
+        authorization: "Bearer " + token,
       },
     }).then(this._statusJson);
   }
 
   //Обновляем аватар пользователя
-  patchUserAvatar(userData) {
+  patchUserAvatar(userData, token) {
     return fetch(this._baseUrl + "/users/me/avatar", {
       method: "PATCH",
       headers: {
-        authorization: this._headers,
+        authorization: "Bearer " + token,
         "Content-type": "application/json",
       },
       body: JSON.stringify({
@@ -97,8 +96,7 @@ export class Api {
 }
 
 const api = new Api({
-  baseUrl: "http://api.mesto.alex.students.nomoreparties.space",
-  headers: "Bearer " + localStorage.getItem('jwt')
+  baseUrl: "https://api.mesto.alex.students.nomoreparties.space",
 });
 
 export default api;

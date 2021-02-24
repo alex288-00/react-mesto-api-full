@@ -1,4 +1,3 @@
-// const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -6,6 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const BadRequestError = require('../errors/BadRequestError');
 
+// Авторизация пользователя, проверяем почту и пароль и возвращаем токен
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email }).select('+password')
@@ -30,6 +30,7 @@ module.exports.login = (req, res, next) => {
     });
 };
 
+// Поиск информации о пользователе
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {

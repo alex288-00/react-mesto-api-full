@@ -1,4 +1,4 @@
-export const BASE_URL = "http://api.mesto.alex.students.nomoreparties.space";
+export const BASE_URL = "https://api.mesto.alex.students.nomoreparties.space";
 
 const checkResponse = (res) =>
   res.ok ? res.json() : Promise.reject("Ошибка на сервере");
